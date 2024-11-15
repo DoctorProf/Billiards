@@ -1,7 +1,7 @@
 #pragma once
 
-enum Type
+typedef enum
 {
-	Main,
-	Base
-};
+	Base,
+	Main
+} Type;

@@ -2,9 +2,9 @@
 #include <raylib.h>
 #include "Type.h"
 
-struct Ball
+typedef struct
 {
-	Type type;
 	Vector2 position;
 	Vector2 velocity;
-};
+	Type type;
+} Ball;

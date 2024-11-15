@@ -1,4 +1,4 @@
-﻿#include <stdio.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
 #include "Headers/Ball.h"
@@ -29,18 +29,22 @@ int main()
 		start_x += 2 * radius;
 		for (int j = 0; j <= i; ++j)
 		{
-			Ball ball = Ball();
-			ball.position = { start_x, start_y + 2 * (radius + 1) * j };
-			ball.velocity = { 0 , 0 };
-			ball.type = Type::Base;
+			Ball ball;
+			ball.position.x = start_x;
+			ball.position.y = start_y + 2 * (radius + 1) * j;
+			ball.velocity.x = 0;
+			ball.velocity.y = 0;
+			ball.type = Base;
 			balls[balls_count] = ball;
 			++balls_count;
 		}
 	}
 	Ball play_ball;
-	play_ball.position = { (float)round(screen_width / 2.5), screen_height / 2 };
-	play_ball.velocity = { 0, 0 };
-	play_ball.type = Type::Main;
+	play_ball.position.x = (float)round(screen_width / 2.5);
+	play_ball.position.y = screen_height / 2;
+	play_ball.velocity.x = 0;
+	play_ball.velocity.y = 0;
+	play_ball.type = Main;
 	balls[balls_count] = play_ball;
 	++balls_count;
 	InitWindow(screen_width, screen_height, "Billiards");
@@ -53,12 +57,12 @@ int main()
 
 		for (int i = 0; i < 6; ++i)
 		{
-			DrawCircle(holes_positions[i][0], holes_positions[i][1], radius, GRAY);
+			DrawCircle(holes_positions[i][0], holes_positions[i][1], radius, BLACK);
 		}
 		for (int i = 0; i < balls_count; ++i)
 		{
 			Ball ball = balls[i];
-			DrawCircle(ball.position.x, ball.position.y, radius, ball.type != Type::Main ? WHITE : BLACK);
+			DrawCircle(ball.position.x, ball.position.y, radius, ball.type != Main ? WHITE : RED);
 		}
 		EndDrawing();
 	}
