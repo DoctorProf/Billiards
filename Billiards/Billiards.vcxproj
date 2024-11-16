@@ -130,6 +130,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Headers\Ball.h" />
+    <ClInclude Include="Headers\Cell.h" />
     <ClInclude Include="Headers\Type.h" />
   </ItemGroup>
   <ItemGroup>
