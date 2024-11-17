@@ -12,13 +12,49 @@ float distance(Vector2 pos_1, Vector2 pos_2)
 	float y = pos_2.y - pos_1.y;
 	return sqrtf(powf(x, 2) + powf(y, 2));
 }
+float lengthVector(Vector2 vec)
+{
+	return sqrtf(powf(vec.x, 2) + powf(vec.y, 2));
+}
 Vector2 direction(Vector2 start_pos, Vector2 end_pos)
 {
-	Vector2 direction;
+	Vector2 normal;
 	float dist = distance(start_pos, end_pos);
-	direction.x = (start_pos.x - end_pos.x) / dist;
-	direction.y = (start_pos.y - end_pos.y) / dist;
-	return direction;
+	normal.x = (start_pos.x - end_pos.x) / dist;
+	normal.y = (start_pos.y - end_pos.y) / dist;
+	return normal;
+}
+Vector2 normalizeVector(Vector2 vec)
+{
+	Vector2 normal;
+	float dist = lengthVector(vec);
+	normal.x = vec.x / dist;
+	normal.y = vec.y / dist;
+	return normal;
+}
+Vector2 scaleVector(Vector2 vec, int value)
+{
+	vec.x *= value;
+	vec.y *= value;
+	return vec;
+}
+Vector2 subtractVectors(Vector2 vec_1, Vector2 vec_2)
+{
+	Vector2 result = { 0, 0 };
+	result.x = vec_1.x - vec_2.x;
+	result.y = vec_1.y - vec_2.y;
+	return result;
+}
+float dotProduct(Vector2 vec_1, Vector2 vec_2)
+{
+	return vec_1.x * vec_2.x + vec_1.y * vec_2.y;
+}
+Vector2 reflectVelocity(Vector2 velocity, Vector2 normal)
+{
+	normal = normalizeVector(normal);
+	float dot = dotProduct(velocity, normal);
+	Vector2 reflect_velocity = subtractVectors(velocity, scaleVector(normal, 2.f * dot));
+	return reflect_velocity;
 }
 int generateBalls(Ball* balls, int screen_width, int screen_height, int radius)
 {
@@ -66,26 +102,59 @@ void checkCells(Cell** grid, int width, int height, Ball* balls, int balls_count
 		}
 	}
 }
-void collisionBalls(Ball* balls, int ball_count)
+
+void checkEndRound(Ball* balls, int balls_count, bool* round)
 {
+	for (int i = 0; i < balls_count; ++i)
+	{
+		if (lengthVector(balls[i].velocity) > 0.02)
+		{
+			*round = true;
+			return;
+		}
+	}
+	*round = false;
 }
 void moveBalls(Ball* balls, int balls_count, float damping)
 {
 	for (int i = 0; i < balls_count; ++i)
 	{
-		//balls[i].velocity.x = balls[i].velocity.x * damping;
-		//balls[i].velocity.y = balls[i].velocity.y * damping;
+		balls[i].velocity.x = balls[i].velocity.x * damping;
+		balls[i].velocity.y = balls[i].velocity.y * damping;
 		balls[i].position.x += balls[i].velocity.x;
 		balls[i].position.y += balls[i].velocity.y;
 	}
 }
-void collisionScreen()
+void collisionScreen(Ball* balls, int balls_count, int radius, int screen_width, int screen_height)
+{
+	for (int i = 0; i < balls_count; ++i)
+	{
+		Vector2 pos_check = balls[i].position;
+		Vector2 v_normal = { 0, 1 };
+		Vector2 h_hormal = { 1, 0 };
+		if (pos_check.y <= radius || pos_check.y >= screen_height - radius)
+		{
+			Vector2 reflect_velocity = reflectVelocity(balls[i].velocity, v_normal);
+			balls[i].velocity.x = reflect_velocity.x;
+			balls[i].velocity.y = reflect_velocity.y;
+			printf("REFLECT!!!\n");
+		}
+		if (pos_check.x <= radius || pos_check.x >= screen_width - radius)
+		{
+			Vector2 reflect_velocity = reflectVelocity(balls[i].velocity, h_hormal);
+			balls[i].velocity.x = reflect_velocity.x;
+			balls[i].velocity.y = reflect_velocity.y;
+			printf("REFLECT!!!\n");
+		}
+	}
+}
+void collisionBalls(Ball* balls, int ball_count)
 {
 }
 int main()
 {
 	srand(time(NULL));
-	float damping = 0.01;
+	float damping = 0.99;
 	int screen_width = 800;
 	int screen_height = 400;
 	int radius = 10;
@@ -140,21 +209,17 @@ int main()
 			printf("\n");
 		}
 	}
-	bool pause = false;
 	bool shot = false;
+	bool round = false;
 	Vector2 current_mouse_pos = { 0, 0 };
-	float max_power = 200;
+	float max_power = 10;
 
 	while (!WindowShouldClose())
 	{
 		current_mouse_pos = GetMousePosition();
-		if (IsKeyPressed(KEY_SPACE))
+		if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && !shot && !round)
 		{
-			pause = !pause;
-		}
-		if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
-		{
-			if (distance(current_mouse_pos, main_ball->position) <= radius && !shot)
+			if (distance(current_mouse_pos, main_ball->position) <= radius)
 			{
 				shot = true;
 			}
@@ -163,14 +228,15 @@ int main()
 		{
 			shot = false;
 			Vector2 dir = direction(main_ball->position, current_mouse_pos);
-			main_ball->velocity.x = dir.x;
-			main_ball->velocity.y = dir.y;
+			float power = distance(main_ball->position, current_mouse_pos) / max_power;
+			power = power > 10 ? max_power : power;
+			main_ball->velocity.x = dir.x * power;
+			main_ball->velocity.y = dir.y * power;
+			round = true;
 		}
-		if (!pause)
-		{
-			moveBalls(balls, balls_count, damping);
-		}
-
+		collisionScreen(balls, balls_count, radius, screen_width, screen_height);
+		moveBalls(balls, balls_count, damping);
+		checkEndRound(balls, balls_count, &round);
 		BeginDrawing();
 		ClearBackground(DARKGREEN);
 		for (int i = 0; i < height_grid; ++i)
@@ -212,9 +278,9 @@ int main()
 			int pos_x = 10;
 			int pos_y = screen_height / 2 - height / 2;
 			DrawRectangle(pos_x, pos_y, width, height, WHITE);
-			float dist = distance(current_mouse_pos, main_ball->position);
-			int height_power = (int)(dist * (height / max_power));
-			height_power = height_power > height ? height : height_power;
+			int dist = distance(current_mouse_pos, main_ball->position) / max_power;
+			dist = dist > 10 ? max_power : dist;
+			int height_power = height / max_power * dist;
 			int pos_y_power = height - height_power;
 			DrawRectangle(pos_x, pos_y + pos_y_power, width, height_power, RED);
 
@@ -224,17 +290,6 @@ int main()
 			end_pos.y = main_ball->position.y + 100 * dir.y;
 			DrawLineV(main_ball->position, end_pos, WHITE);
 			printf("X - %f, Y - %f\n", current_mouse_pos.x, current_mouse_pos.y);
-		}
-		if (pause)
-		{
-			Font font = GetFontDefault();
-			char* text = "PAUSE";
-			int font_size = 50;
-			int spacing = 5;
-			Vector2 size_text = MeasureTextEx(font, text, font_size, spacing);
-			Vector2 text_pos = { screen_width / 2, screen_height / 2 };
-			Vector2 origin = { size_text.x / 2, size_text.y / 2 };
-			DrawTextPro(font, text, text_pos, origin, 0, font_size, spacing, WHITE);
 		}
 		EndDrawing();
 	}
