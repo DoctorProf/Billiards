@@ -129,12 +129,20 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Headers\Ball.h" />
-    <ClInclude Include="Headers\Cell.h" />
-    <ClInclude Include="Headers\Type.h" />
+    <ClInclude Include="Headers\game.h" />
+    <ClInclude Include="Headers\Objects\ball.h" />
+    <ClInclude Include="Headers\Objects\cell.h" />
+    <ClInclude Include="Headers\Objects\type.h" />
+    <ClInclude Include="Headers\physics.h" />
+    <ClInclude Include="Headers\utils.h" />
+    <ClInclude Include="Headers\vectormath.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.c" />
+    <ClCompile Include="Sources\game.c" />
+    <ClCompile Include="Sources\physics.c" />
+    <ClCompile Include="Sources\utils.c" />
+    <ClCompile Include="Sources\vectormath.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

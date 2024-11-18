@@ -1,6 +1,6 @@
 #pragma once
 #include <raylib.h>
-#include "Type.h"
+#include "type.h"
 
 typedef struct
 {
