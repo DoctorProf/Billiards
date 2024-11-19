@@ -21,6 +21,7 @@ int generateBalls(Ball* balls, int screen_width, int screen_height, int radius)
 	{
 		for (int j = 0; j <= i; ++j)
 		{
+			snprintf(balls[balls_count].number, sizeof(balls[balls_count].number), "%d", balls_count + 1);
 			balls[balls_count].position = (Vector2){ start_x , start_y + 2 * (radius + 1) * j };
 			balls[balls_count].velocity = (Vector2){ 0 ,0 };
 			balls[balls_count].type = Base;

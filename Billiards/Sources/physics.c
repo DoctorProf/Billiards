@@ -149,7 +149,7 @@ void solveCollision(Ball* current_ball, Ball* other_ball, int radius)
 	float dot = dotProduct(relative_velocity, normal);
 
 	Vector2 impulseVector = scaleVector(normal, dot);
-	current_ball->velocity = subtractVectors(current_ball->velocity, scaleVector(impulseVector, 0.9f));
+	current_ball->velocity = subtractVectors(current_ball->velocity, scaleVector(impulseVector, 1.0f));
 	other_ball->velocity = addVectors(other_ball->velocity, impulseVector);
 }
 void checkCellsCollision(Ball* balls, Cell* current_cell, Cell* other_cell, int radius)
@@ -206,10 +206,46 @@ void collisionBalls(Ball* balls, int balls_count, int radius)
 					float dot = dotProduct(relative_velocity, normal);
 
 					Vector2 impulseVector = scaleVector(normal, dot);
-					current_ball->velocity = subtractVectors(current_ball->velocity, scaleVector(impulseVector, 0.9f));
+					current_ball->velocity = subtractVectors(current_ball->velocity, scaleVector(impulseVector, 0.5f));
 					other_ball->velocity = addVectors(other_ball->velocity, impulseVector);
 				}
 			}
+		}
+	}
+}
+
+void collisionHoles(Ball* balls, int* balls_count, int radius, Vector2 holes_positions[6], Vector2 main_ball_pos)
+{
+	bool collide = false;
+	for (int i = 0; i < *balls_count; ++i)
+	{
+		for (int j = 0; j < 6; ++j)
+		{
+			if (distance(balls[i].position, holes_positions[j]) > radius)
+			{
+				continue;
+			}
+			else
+			{
+				collide = true;
+				break;
+			}
+		}
+		if (collide)
+		{
+			Ball* ball = &balls[i];
+			if (i != (*balls_count) - 1)
+			{
+				memmove(&balls[i], &balls[i + 1], (*balls_count - i - 1) * sizeof(Ball));
+				--(*balls_count);
+				--i;
+			}
+			else
+			{
+				ball->position = main_ball_pos;
+				ball->velocity = (Vector2){ 0, 0 };
+			}
+			collide = false;
 		}
 	}
 }
