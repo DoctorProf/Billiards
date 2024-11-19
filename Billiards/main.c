@@ -42,7 +42,7 @@ int main()
 	Ball* main_ball = &balls[balls_count++];
 
 	generateGrid(width_grid, height_grid, grid);
-	checkCells(grid, width_grid, height_grid, balls, balls_count, radius);
+	//checkCells(grid, width_grid, height_grid, balls, balls_count, radius);
 	InitWindow(screen_width, screen_height, "Billiards");
 	SetTargetFPS(60);
 
@@ -86,9 +86,9 @@ int main()
 			round = true;
 		}
 		moveBalls(balls, balls_count, damping);
-		//checkCells(grid, width_grid, height_grid, balls, balls_count, radius);
-		collisionBalls(balls, balls_count, radius);
-		//findCollisionGrid(balls, grid, width_grid, height_grid, radius);
+		checkCells(grid, width_grid, height_grid, balls, balls_count, radius);
+		//collisionBalls(balls, balls_count, radius);
+		findCollisionGrid(balls, grid, width_grid, height_grid, radius);
 		collisionScreen(balls, balls_count, radius, screen_width, screen_height);
 		checkEndRound(balls, balls_count, &round);
 		BeginDrawing();

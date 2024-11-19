@@ -106,10 +106,41 @@ void collisionScreen(Ball* balls, int balls_count, int radius, int screen_width,
 }
 bool collide(Vector2 pos_1, Vector2 pos_2, int radius)
 {
+	if (pos_1.x == pos_2.x && pos_1.y == pos_2.y) return false;
 	return distance(pos_1, pos_2) < 2.f * radius;
 }
-void solveCollision(Ball* current_ball, Ball* other_ball)
+//void solveCollision(Ball* current_ball, Ball* other_ball)
+//{
+//	Vector2 normal = subtractVectors(current_ball->position, other_ball->position);
+//	normal = normalizeVector(normal);
+//
+//	Vector2 relative_velocity = subtractVectors(current_ball->velocity, other_ball->velocity);
+//
+//	float dot = dotProduct(relative_velocity, normal);
+//
+//	Vector2 impulseVector = scaleVector(normal, dot);
+//	current_ball->velocity = subtractVectors(current_ball->velocity, scaleVector(impulseVector, 0.9f));
+//	other_ball->velocity = addVectors(other_ball->velocity, impulseVector);
+//}
+void moveBall(Ball* ball, Vector2 step)
 {
+	ball->position.x += step.x;
+	ball->position.y += step.y;
+}
+void solveCollision(Ball* current_ball, Ball* other_ball, int radius)
+{
+	Vector2 dir = direction(current_ball->position, other_ball->position);
+	float dist = distance(current_ball->position, other_ball->position);
+
+	float minDistance = radius * 2.f;
+	float c = (minDistance - dist);
+	Vector2 p = { 0, 0 };
+	p.x = -c * dir.x * 0.5f;
+	p.y = -c * dir.y * 0.5f;
+	moveBall(other_ball, p);
+	p.x = -p.x;
+	p.y = -p.y;
+	moveBall(current_ball, p);
 	Vector2 normal = subtractVectors(current_ball->position, other_ball->position);
 	normal = normalizeVector(normal);
 
@@ -127,14 +158,11 @@ void checkCellsCollision(Ball* balls, Cell* current_cell, Cell* other_cell, int 
 	{
 		for (int j = 0; j < other_cell->count_balls; ++j)
 		{
-			if (i != j)
+			Ball* current_ball = &balls[current_cell->balls_index[i]];
+			Ball* other_ball = &balls[other_cell->balls_index[j]];
+			if (collide(current_ball->position, other_ball->position, radius))
 			{
-				Ball* current_ball = &balls[current_cell->balls_index[i]];
-				Ball* other_ball = &balls[other_cell->balls_index[j]];
-				if (collide(current_ball->position, other_ball->position, radius))
-				{
-					solveCollision(current_ball, other_ball);
-				}
+				solveCollision(current_ball, other_ball, radius);
 			}
 		}
 	}
