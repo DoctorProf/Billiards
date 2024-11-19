@@ -12,11 +12,11 @@ void generateGrid(int width, int height, Cell** grid)
 		}
 	}
 }
-int generateBalls(Ball* balls, int screen_width, int screen_height, int radius)
+int generateBalls(Ball* balls, Vector2 win_size, int radius)
 {
 	int balls_count = 0;
-	float start_x = round(screen_width / 1.5);
-	float start_y = screen_height / 2;
+	float start_x = round(win_size.x / 1.5);
+	float start_y = win_size.y / 2;
 	for (int i = 0; i < 5; ++i)
 	{
 		for (int j = 0; j <= i; ++j)
@@ -32,15 +32,15 @@ int generateBalls(Ball* balls, int screen_width, int screen_height, int radius)
 	}
 	return balls_count;
 }
-void checkEndRound(Ball* balls, int balls_count, bool* round)
+void checkEndStep(Ball* balls, int balls_count, bool* step)
 {
 	for (int i = 0; i < balls_count; ++i)
 	{
 		if (lengthVector(balls[i].velocity) != 0)
 		{
-			*round = true;
+			*step = true;
 			return;
 		}
 	}
-	*round = false;
+	*step = false;
 }
