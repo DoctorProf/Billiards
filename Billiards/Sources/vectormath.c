@@ -43,3 +43,7 @@ Vector2 reflectVector(Vector2 velocity, Vector2 normal)
 	Vector2 reflect_velocity = subtractVectors(velocity, scaleVector(normal, 2.f * dot));
 	return reflect_velocity;
 }
+float diagonal(Vector2 size)
+{
+	return sqrtf(powf(size.x, 2) + powf(size.y, 2));
+}

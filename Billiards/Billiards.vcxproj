@@ -132,6 +132,7 @@
     <ClInclude Include="Headers\game.h" />
     <ClInclude Include="Headers\Objects\ball.h" />
     <ClInclude Include="Headers\Objects\cell.h" />
+    <ClInclude Include="Headers\Objects\gamestate.h" />
     <ClInclude Include="Headers\Objects\type.h" />
     <ClInclude Include="Headers\physics.h" />
     <ClInclude Include="Headers\utils.h" />

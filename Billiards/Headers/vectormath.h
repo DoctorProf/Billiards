@@ -9,3 +9,4 @@ Vector2 subtractVectors(Vector2 vec_1, Vector2 vec_2);
 Vector2 addVectors(Vector2 vec_1, Vector2 vec_2);
 float dotProduct(Vector2 vec_1, Vector2 vec_2);
 Vector2 reflectVector(Vector2 velocity, Vector2 normal);
+float diagonal(Vector2 size);

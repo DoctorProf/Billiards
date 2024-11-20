@@ -30,7 +30,7 @@ void checkCells(Cell** grid, int width_grid, int height_grid, Ball* balls, int b
 		}
 	}
 }
-void moveBalls(Ball* balls, int balls_count, float damping)
+void moveBalls(Ball* balls, int balls_count, float damping, float delta)
 {
 	for (int i = 0; i < balls_count; ++i)
 	{
@@ -48,11 +48,11 @@ void moveBalls(Ball* balls, int balls_count, float damping)
 			balls[i].velocity.x = balls[i].velocity.x * damping;
 			balls[i].velocity.y = balls[i].velocity.y * damping;
 		}
-		balls[i].position.x += balls[i].velocity.x;
-		balls[i].position.y += balls[i].velocity.y;
+		balls[i].position.x += balls[i].velocity.x * delta;
+		balls[i].position.y += balls[i].velocity.y * delta;
 	}
 }
-void collisionScreen(Ball* balls, int balls_count, int radius, int screen_width, int screen_height)
+void collisionScreen(Ball* balls, int balls_count, int radius, int screen_width, int screen_height, float delta)
 {
 	for (int i = 0; i < balls_count; ++i)
 	{
@@ -109,19 +109,6 @@ bool collide(Vector2 pos_1, Vector2 pos_2, int radius)
 	if (pos_1.x == pos_2.x && pos_1.y == pos_2.y) return false;
 	return distance(pos_1, pos_2) < 2.f * radius;
 }
-//void solveCollision(Ball* current_ball, Ball* other_ball)
-//{
-//	Vector2 normal = subtractVectors(current_ball->position, other_ball->position);
-//	normal = normalizeVector(normal);
-//
-//	Vector2 relative_velocity = subtractVectors(current_ball->velocity, other_ball->velocity);
-//
-//	float dot = dotProduct(relative_velocity, normal);
-//
-//	Vector2 impulseVector = scaleVector(normal, dot);
-//	current_ball->velocity = subtractVectors(current_ball->velocity, scaleVector(impulseVector, 0.9f));
-//	other_ball->velocity = addVectors(other_ball->velocity, impulseVector);
-//}
 void moveBall(Ball* ball, Vector2 step)
 {
 	ball->position.x += step.x;
